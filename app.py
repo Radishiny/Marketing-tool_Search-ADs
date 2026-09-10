@@ -450,6 +450,7 @@ else:
                             except Exception:
                                 model = genai.GenerativeModel('gemini-1.5-pro')
                         
+                        # [수정 포인트 1] 프롬프트에 6자 이상 텍스트 분류 규칙 명시
                         parsing_prompt = f"""
                         다음은 사용자가 네이버 검색광고 화면에서 복사한 원본 텍스트입니다:
                         
@@ -462,10 +463,11 @@ else:
                            - 타이틀 라인에서 브랜드명을 기준으로, 앞부분(키워드+브랜드명)은 '광고 제목'으로, 그 뒤에 붙은 문구는 '추가제목'으로 정확히 분리하세요.
                         4. 설명 (대표 설명문구):
                            - 긴 본문 설명 문구만 '설명' 칸에 넣으세요.
-                        5. 홍보문구:
-                           - '할인', '이벤트', '사은품', '특가' 등 단독 태그 단어와 그 바로 밑/뒤에 오는 홍보 문구는 묶어서 'promo_text' 칸에 넣으세요.
+                        5. 홍보문구 및 서브링크 분류 기준 (매우 중요):
+                           - '할인', '이벤트', '사은품', '특가' 등의 프로모션 키워드가 있거나, **글자 수가 6자를 초과하는 일반 텍스트/서브링크 성격의 문구**는 짧은 서브링크가 아닌 **'홍보문구(promo_text)'** 영역으로 우선 분류하세요.
+                           - 홍보문구 글자수는 최대 14자 제한에 맞도록 핵심만 추출하세요.
                         6. 서브링크:
-                           - 홍보문구 밑에 나열된 카테고리 단어들은 쉼표(,)로 연결하여 '서브링크' 칸에 넣으세요.
+                           - 6자 이하의 짧은 단축어 형태인 카테고리 단어들만 쉼표(,)로 연결하여 'sub_links' 칸에 넣으세요. (6자 초과 시 절대 서브링크에 넣지 말고 홍보문구로 보낼 것)
                         7. 데이터가 없는 항목은 빈 문자열("")로 두세요.
 
                         결과는 오직 아래 JSON 배열 형식으로만 출력하세요. 백틱이나 부연 설명은 절대 금지합니다.
@@ -493,6 +495,17 @@ else:
                             current_time = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
                             new_rows = []
                             for item in parsed_data:
+                                promo = item.get("promo_text", "") or ""
+                                sub_links = item.get("sub_links", "") or ""
+                                
+                                # [수정 포인트 2] 파이썬 후처리 안전장치: 서브링크에 6자 초과 텍스트가 들어가 있으면 홍보문구로 강제 이관
+                                if sub_links and len(sub_links.strip()) > 6:
+                                    if not promo:
+                                        promo = sub_links
+                                    else:
+                                        promo = f"{promo}, {sub_links}"
+                                    sub_links = ""
+
                                 new_rows.append({
                                     "수집시간": current_time,
                                     "키워드": target_keyword,
@@ -501,8 +514,8 @@ else:
                                     "광고 제목": item.get("title", "") or "",
                                     "추가제목": item.get("sub_title", "") or "",
                                     "설명": item.get("desc", "") or "",
-                                    "홍보문구": item.get("promo_text", "") or "",
-                                    "서브링크": item.get("sub_links", "") or ""
+                                    "홍보문구": promo,
+                                    "서브링크": sub_links
                                 })
                             
                             added_df = pd.DataFrame(new_rows)
