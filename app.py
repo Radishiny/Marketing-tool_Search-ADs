@@ -345,20 +345,20 @@ else:
         st.markdown("### ⚡ 네이버 파워링크 모바일 라이브 모니터링 & 소재 분류")
         target_keyword = st.text_input("모니터링할 키워드를 입력하세요", "책상")
         
-        col1, col2 = st.columns([1, 1])
+        col1, col2 = st.columns([1.1, 0.9])
         
         with col1:
-            st.markdown("#### 📱 모바일 파워링크 검색")
-            # 스마트폰 디바이스 목업 프레임 UI
+            st.markdown("#### 📱 모바일 파워링크 검색 (확대 뷰)")
+            # 넓어진 모바일 프레임 및 비율 축소(zoom: 85%)로 시원한 모니터링 제공
             iframe_html = f"""
-            <div style="display: flex; justify-content: center; background-color: #f0f2f5; padding: 15px; border-radius: 12px;">
-                <div style="width: 390px; height: 650px; border: 8px solid #222; border-radius: 36px; overflow: hidden; background: #fff; box-shadow: 0 6px 15px rgba(0,0,0,0.18);">
+            <div style="display: flex; justify-content: center; background-color: #f0f2f5; padding: 10px; border-radius: 12px;">
+                <div style="width: 480px; height: 720px; border: 6px solid #222; border-radius: 28px; overflow: hidden; background: #fff; box-shadow: 0 6px 15px rgba(0,0,0,0.18);">
                     <iframe src="https://m.ad.search.naver.com/search.naver?where=m_ad&query={target_keyword}" 
-                            width="100%" height="100%" frameborder="0"></iframe>
+                            width="100%" height="100%" frameborder="0" style="zoom: 0.85; -moz-transform: scale(0.85); -moz-transform-origin: 0 0;"></iframe>
                 </div>
             </div>
             """
-            components.html(iframe_html, height=700, scrolling=False)
+            components.html(iframe_html, height=750, scrolling=False)
 
         with col2:
             st.markdown("#### 🧠 AI 소재 수집 및 자동 분류")
@@ -367,7 +367,7 @@ else:
             raw_text_input = st.text_area(
                 "경쟁사 소재 문구 통복사 붙여넣기", 
                 placeholder="favicon\n아성가구\nasungoa.com\n네이버페이\n네이버 톡톡\n책상 아성가구 대량견적 추가할인!\n...",
-                height=300
+                height=350
             )
             
             if st.button("🤖 AI로 소재 정밀 분류 및 DB 등록", use_container_width=True):
