@@ -65,12 +65,12 @@ with st.sidebar:
 # ---------------------------------------------------------
 # 상단 기능 선택 배너 / 네비게이션
 # ---------------------------------------------------------
-st.title("🚀 Ad-Inverted & Monitoring Integrated Tool (Kyeong's)")
+st.title("🚀 소재 데이터화 & 기획 툴 (Kyeong's)")
 
 # 상단 배너 형태의 라디오 버튼 메뉴 (1번: 분석/기획, 2번: 모바일 모니터링/DB)
 mode = st.radio(
     "📌 원하는 작업 모드를 선택하세요:",
-    ["1️⃣ 경쟁사 소재 분석 & AI 소재 디벨롭 (Kyeong's)", "2️⃣ 네이버SA 모바일 라이브 모니터링 & 소재 자동 수집 DB"],
+    ["1️⃣ 경쟁사 소재 분석 & AI 소재 디벨롭 (Kyeong's)", "2️⃣ 네이버SA 실시간 모니터링 & 데이터화"],
     horizontal=True
 )
 
@@ -340,7 +340,7 @@ if mode == "1️⃣ 경쟁사 소재 분석 & AI 소재 디벨롭 (Kyeong's)":
 else:
     tab1, tab2 = st.tabs(["1. 모바일 실시간 모니터링 & 소재 수집", "2. 누적 데이터베이스"])
 
-    # [탭 1] 모바일 실시간 모니터링 & AI 자동 수집
+    # [탭 1] 모바일 실시간 모니터링 & 소재 자동 분류 
     with tab1:
         st.markdown("### ⚡ 네이버 파워링크 모바일 라이브 모니터링 & 소재 분류")
         target_keyword = st.text_input("모니터링할 키워드를 입력하세요", "책상")
@@ -361,7 +361,7 @@ else:
             components.html(iframe_html, height=750, scrolling=False)
 
         with col2:
-            st.markdown("#### 🧠 AI 소재 수집 및 자동 분류")
+            st.markdown("#### 🧠 AI 소재 데이터화")
             st.caption("모바일 광고 영역을 드래그하여 붙여넣으세요. 항목별로 깔끔하게 분류되어 DB에 누적됩니다.")
             
             raw_text_input = st.text_area(
