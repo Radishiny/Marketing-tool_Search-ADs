@@ -65,12 +65,12 @@ with st.sidebar:
 # ---------------------------------------------------------
 # 상단 기능 선택 배너 / 네비게이션
 # ---------------------------------------------------------
-st.title("🚀 소재 데이터화 & 기획 툴 (Kyeong's)")
+st.title("🚀 Ad-Inverted & Monitoring Integrated Tool (Kyeong's)")
 
-# 상단 배너 형태의 라디오 버튼 메뉴 (경쟁사 소재 분석 순서를 1번으로 적용)
+# 상단 배너 형태의 라디오 버튼 메뉴 (1번: 분석/기획, 2번: 모바일 모니터링/DB)
 mode = st.radio(
     "📌 원하는 작업 모드를 선택하세요:",
-    ["1️⃣ 경쟁사 소재 분석 & AI 소재 디벨롭 (Kyeong's)", "2️⃣ 네이버SA 실시간 모니터링 & 데이터화"],
+    ["1️⃣ 경쟁사 소재 분석 & AI 소재 디벨롭 (Kyeong's)", "2️⃣ 네이버SA 모바일 라이브 모니터링 & 소재 자동 수집 DB"],
     horizontal=True
 )
 
@@ -335,33 +335,34 @@ if mode == "1️⃣ 경쟁사 소재 분석 & AI 소재 디벨롭 (Kyeong's)":
                 st.error(f"오류가 발생했습니다: {e}")
 
 # =========================================================
-# [모드 2] 네이버SA 라이브 모니터링 & 소재 자동 수집 DB
+# [모드 2] 네이버SA 모바일 라이브 모니터링 & 소재 자동 수집 DB
 # =========================================================
 else:
-    tab1, tab2 = st.tabs(["1. 실시간 모니터링 & 소재 수집", "2. 누적 데이터베이스"])
+    tab1, tab2 = st.tabs(["1. 모바일 실시간 모니터링 & 소재 수집", "2. 누적 데이터베이스"])
 
-    # [탭 1] 실시간 모니터링 & AI 자동 수집
+    # [탭 1] 모바일 실시간 모니터링 & AI 자동 수집
     with tab1:
-        st.markdown("### ⚡ 네이버 파워링크 실시간 모니터링 & 소재 분류")
+        st.markdown("### ⚡ 네이버 파워링크 모바일 라이브 모니터링 & 소재 분류")
         target_keyword = st.text_input("모니터링할 키워드를 입력하세요", "책상")
         
         col1, col2 = st.columns([1, 1])
         
         with col1:
-            st.markdown("#### 🖥️ 파워링크 라이브 검색")
-iframe_html = f"""
-<div style="display: flex; justify-content: center; background-color: #f0f2f5; padding: 15px; border-radius: 10px;">
-    <div style="width: 390px; height: 650px; border: 8px solid #333; border-radius: 36px; overflow: hidden; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-        <iframe src="https://m.ad.search.naver.com/search.naver?where=m_ad&query={target_keyword}" 
-                width="100%" height="100%" frameborder="0"></iframe>
-    </div>
-</div>
-"""
-            components.html(iframe_html, height=580, scrolling=True)
+            st.markdown("#### 📱 모바일 파워링크 검색")
+            # 스마트폰 디바이스 목업 프레임 UI
+            iframe_html = f"""
+            <div style="display: flex; justify-content: center; background-color: #f0f2f5; padding: 15px; border-radius: 12px;">
+                <div style="width: 390px; height: 650px; border: 8px solid #222; border-radius: 36px; overflow: hidden; background: #fff; box-shadow: 0 6px 15px rgba(0,0,0,0.18);">
+                    <iframe src="https://m.ad.search.naver.com/search.naver?where=m_ad&query={target_keyword}" 
+                            width="100%" height="100%" frameborder="0"></iframe>
+                </div>
+            </div>
+            """
+            components.html(iframe_html, height=700, scrolling=False)
 
         with col2:
             st.markdown("#### 🧠 AI 소재 수집 및 자동 분류")
-            st.caption("네이버 광고 영역을 드래그하여 붙여넣으세요. 항목별로 깔끔하게 분류되어 DB에 누적됩니다.")
+            st.caption("모바일 광고 영역을 드래그하여 붙여넣으세요. 항목별로 깔끔하게 분류되어 DB에 누적됩니다.")
             
             raw_text_input = st.text_area(
                 "경쟁사 소재 문구 통복사 붙여넣기", 
