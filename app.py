@@ -349,12 +349,14 @@ else:
         
         with col1:
             st.markdown("#### 🖥️ 파워링크 라이브 검색")
-            iframe_html = f"""
-            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 10px; background-color: #f9f9f9;">
-                <iframe src="https://ad.search.naver.com/search.naver?where=ad&query={target_keyword}" 
-                        width="100%" height="550px" frameborder="0"></iframe>
-            </div>
-            """
+iframe_html = f"""
+<div style="display: flex; justify-content: center; background-color: #f0f2f5; padding: 15px; border-radius: 10px;">
+    <div style="width: 390px; height: 650px; border: 8px solid #333; border-radius: 36px; overflow: hidden; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+        <iframe src="https://m.ad.search.naver.com/search.naver?where=m_ad&query={target_keyword}" 
+                width="100%" height="100%" frameborder="0"></iframe>
+    </div>
+</div>
+"""
             components.html(iframe_html, height=580, scrolling=True)
 
         with col2:
