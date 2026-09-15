@@ -450,7 +450,7 @@ else:
                             except Exception:
                                 model = genai.GenerativeModel('gemini-1.5-pro')
                         
-                        # [수정 포인트] 서브링크 규격(6자 이하)은 정상 유지하고, 6자를 초과하는 항목만 홍보문구로 분리하도록 정교화된 프롬프트
+                        # [수정 포인트 1] 프롬프트에 '할인, 이벤트, 특가, 혜택' 등 프로모션 키워드 포함 시 무조건 홍보문구로 분류하도록 명시
                         parsing_prompt = f"""
                         다음은 사용자가 네이버 검색광고 화면에서 복사한 원본 텍스트입니다:
                         
@@ -464,8 +464,8 @@ else:
                         4. 설명 (대표 설명문구):
                            - 긴 본문 설명 문구만 '설명' 칸에 넣으세요.
                         5. 홍보문구 및 서브링크 분류 기준 (매우 중요):
-                           - **서브링크**: 오직 글자 수 **6자 이하**인 짧은 단축어/카테고리 형태의 단어들만 쉼표(,)로 연결하여 'sub_links'에 넣으세요. (예: "공식몰, 혜택모음" 등)
-                           - **홍보문구**: 프로모션 안내 문구, 할인 조건 등 **6자를 초과하는 문장이나 긴 서브링크 성격의 문구**는 'promo_text' 영역에 넣으세요. (최대 14자 제한 권장)
+                           - **홍보문구 (promo_text)**: '할인', '이벤트', '특가', '혜택', '특판', '최저가', '사은품' 등의 프로모션 키워드가 포함된 문구, 혹은 6자를 초과하는 긴 텍스트는 무조건 이 영역에 넣으세요.
+                           - **서브링크 (sub_links)**: 위 프로모션 키워드가 전혀 포함되지 않고, 글자 수가 **6자 이하**인 짧은 단축어/카테고리 형태의 단어들만 쉼표(,)로 연결하여 넣으세요. (예: "공식몰, 혜택모음" 등)
                         6. 데이터가 없는 항목은 빈 문자열("")로 두세요.
 
                         결과는 오직 아래 JSON 배열 형식으로만 출력하세요. 백틱이나 부연 설명은 절대 금지합니다.
@@ -492,17 +492,20 @@ else:
                             
                             current_time = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
                             new_rows = []
+                            promo_keywords = ["할인", "이벤트", "특가", "혜택", "특판", "최저가", "사은품", "증정", "쿠폰", "무료"]
+                            
                             for item in parsed_data:
                                 promo = item.get("promo_text", "") or ""
                                 sub_links = item.get("sub_links", "") or ""
                                 
-                                # [수정 포인트] 파이썬 후처리 안전장치: 쉼표 기준으로 분리했을 때 6자를 초과하는 개별 서브링크만 홍보문구로 이관
+                                # [수정 포인트 2] 파이썬 후처리 안전장치: 서브링크 내에 프로모션 단어가 포함되어 있거나 6자를 초과하면 무조건 홍보문구로 강제 이관
                                 if sub_links:
                                     links = [l.strip() for l in sub_links.split(",")]
                                     valid_links = []
                                     moved_links = []
                                     for l in links:
-                                        if len(l) > 6:
+                                        has_promo_kw = any(kw in l for kw in promo_keywords)
+                                        if len(l) > 6 or has_promo_kw:
                                             moved_links.append(l)
                                         else:
                                             valid_links.append(l)
